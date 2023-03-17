@@ -1,7 +1,6 @@
 package ua.foxminded.nikasgig.formulaoneapplication.app;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import ua.foxminded.nikasgig.formulaoneapplication.service.*;
 
 public class Main {

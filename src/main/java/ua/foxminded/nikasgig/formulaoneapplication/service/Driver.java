@@ -23,4 +23,16 @@ public class Driver {
     public String getTeam() {
         return team;
     }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setTeam(String team) {
+        this.team = team;
+    }
 }

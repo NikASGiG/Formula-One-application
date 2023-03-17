@@ -7,10 +7,21 @@ import java.util.stream.Collectors;
 
 public class AbbreviationParser {
 
-    public ArrayList<Driver> parser(List<String> source) {
-        return source.stream()
-                .map(line -> line.split("_"))
-                .map(parts -> new Driver(parts[0], parts[1].replace(" ", "_"), parts[2].replace(" ", "_")))
+    private final int CODE_POSITION = 0;
+    private final int NAME_POSITION = 1;
+    private final int TEAM_POSITION = 2;
+
+    public List<Driver> parser(List<String> source) {
+        return removeUnderLine(source
+                .stream().map(line -> line.split("_")).map(parts -> new Driver(parts[CODE_POSITION],
+                        parts[NAME_POSITION].replace(" ", "_"), parts[TEAM_POSITION].replace(" ", "_")))
+                .collect(Collectors.toCollection(ArrayList::new)));
+
+    }
+
+    private List<Driver> removeUnderLine(List<Driver> source) {
+        return source.stream().peek(dashboard -> dashboard.setName(dashboard.getName().replace('_', ' ')))
+                .peek(dashboard -> dashboard.setTeam(dashboard.getTeam().replace('_', ' ')))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 }
