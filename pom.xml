@@ -25,8 +25,8 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<addClasspath>ua.foxminded.nikasgig.formulaoneapplication.Main</addClasspath>
-							<mainClass>ua.foxminded.nikasgig.formulaoneapplication.Main</mainClass>
+							<addClasspath>ua.foxminded.nikasgig.formulaone.Application</addClasspath>
+							<mainClass>ua.foxminded.nikasgig.formulaone.Application</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -45,9 +45,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
 				<configuration>
-					<skipTests>true</skipTests>
+					<skipTests>false</skipTests>
 					<includes>
-						<include>ua\foxminded\nikasgig\formulaoneapplication\*</include>
+						<include>ua\foxminded\nikasgig\formulaone\*</include>
 					</includes>
 				</configuration>
 			</plugin>
