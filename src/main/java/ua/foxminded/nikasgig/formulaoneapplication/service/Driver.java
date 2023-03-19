@@ -19,7 +19,7 @@ public class Driver {
     public String getName() {
         return name;
     }
-    
+
     public String getTeam() {
         return team;
     }

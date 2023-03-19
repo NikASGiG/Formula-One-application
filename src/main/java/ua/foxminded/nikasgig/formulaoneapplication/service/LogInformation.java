@@ -1,13 +1,14 @@
 package ua.foxminded.nikasgig.formulaoneapplication.service;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class LogInformation {
 
-    private static final int CODE_AND_NAME_POSITION = 0;
-    private static final int TIME_POSITION = 1;
+    private static final int CODE_NAME_INDEX = 0;
+    private static final int TIME_INDEX = 1;
     private static final int CODE_LENGTH = 3;
-    
+
     private String code;
     private String date;
     private LocalTime time;
@@ -17,12 +18,13 @@ public class LogInformation {
         this.date = date;
         this.time = time;
     }
-    
+
     public static LogInformation create(String inputLine) {
-        String[] parts = inputLine.split("_");
-        String code = parts[CODE_AND_NAME_POSITION].substring(CODE_AND_NAME_POSITION, CODE_LENGTH);
-        String date = parts[CODE_AND_NAME_POSITION].substring(CODE_LENGTH);
-        LocalTime time = LocalTime.parse(parts[TIME_POSITION].replace(" ", "_"));
+        String[] tokens = inputLine.split("_");
+        String code = tokens[CODE_NAME_INDEX].substring(CODE_NAME_INDEX, CODE_LENGTH);
+        String date = tokens[CODE_NAME_INDEX].substring(CODE_LENGTH);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+        LocalTime time = LocalTime.parse(tokens[TIME_INDEX], formatter);
         return new LogInformation(code, date, time);
     }
 

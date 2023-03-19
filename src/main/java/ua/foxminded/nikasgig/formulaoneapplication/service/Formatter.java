@@ -11,37 +11,34 @@ import java.util.stream.Stream;
 public class Formatter {
 
     private final int INDEX_FOR_DASHBOARD_SEPARATOR = 15;
-    private final int TAB_FORMATROW = 3;
+    private final int TAB_FORMATROW = 1;
     private int currentIndex = 1;
 
-    public String format(List<Dashboard> list) {
-        list.forEach(dashboard -> dashboard.setTime(calculateTime(dashboard.getStartTime(), dashboard.getEndTime())));
-        List<Dashboard> listWithSortedData = sort(list);
-        final int MAXNAMELENGTH = findMaxNameLength(listWithSortedData);
-        final int MAXTEAMLENGTH = findMaxTeamLength(listWithSortedData);
-        final int MAXTIMELENGTH = formatTime(listWithSortedData.get(0).getTime()).length();
-        List<String> result = listWithSortedData.stream()
-                .map(row -> formatRow(row, MAXNAMELENGTH, MAXTEAMLENGTH, MAXTIMELENGTH)).collect(Collectors.toList());
+    public String format(List<DashboardLine> dashboardLines) {
+        dashboardLines.forEach(
+                dashboard -> dashboard.setTime(calculateTime(dashboard.getStartTime(), dashboard.getEndTime())));
+        Collections.sort(dashboardLines, Comparator.comparing(DashboardLine::getTime));
+        final int maxNameLength = findMaxNameLength(dashboardLines);
+        final int maxTeamLength = findMaxTeamLength(dashboardLines);
+        final int maxTimeLength = formatTime(dashboardLines.get(0).getTime()).length();
+        List<String> result = dashboardLines.stream()
+                .map(row -> formatRow(row, maxNameLength, maxTeamLength, maxTimeLength))
+                .collect(Collectors.toList());
 
         result.add(INDEX_FOR_DASHBOARD_SEPARATOR, addDashboardLine(result.get(INDEX_FOR_DASHBOARD_SEPARATOR).length()));
-        return String.join("\n", result);
+        return String.join(System.lineSeparator(), result);
     }
 
     private Duration calculateTime(LocalTime startTime, LocalTime endTime) {
         return Duration.between(startTime, endTime);
     }
 
-    private List<Dashboard> sort(List<Dashboard> list) {
-        Collections.sort(list, Comparator.comparing(Dashboard::getTime));
-        return list;
+    private int findMaxNameLength(List<DashboardLine> dashboardLines) {
+        return dashboardLines.stream().mapToInt(dashboard -> dashboard.getName().length()).max().orElse(0);
     }
 
-    private int findMaxNameLength(List<Dashboard> source) {
-        return source.stream().mapToInt(dashboard -> dashboard.getName().length()).max().orElse(0);
-    }
-
-    private int findMaxTeamLength(List<Dashboard> source) {
-        return source.stream().mapToInt(dashboard -> dashboard.getTeam().length()).max().orElse(0);
+    private int findMaxTeamLength(List<DashboardLine> dashboardLines) {
+        return dashboardLines.stream().mapToInt(dashboard -> dashboard.getTeam().length()).max().orElse(0);
     }
 
     private String formatTime(Duration duration) {
@@ -49,19 +46,18 @@ public class Formatter {
                 duration.toMillis());
     }
 
-    private String formatRow(Dashboard source, int MAXNAMELENGTH, int MAXTEAMLENGTH, int MAXTIMELENGTH) {
-        StringBuilder result = new StringBuilder();
-        result.append(currentIndex).append(".").append(
-                tab(Integer.toString(currentIndex).length(), TAB_FORMATROW));
-        result.append(source.getName()).append(tab(source.getName().length(), MAXNAMELENGTH)).append("|");
-        result.append(source.getTeam()).append(tab(source.getTeam().length(), MAXTEAMLENGTH)).append("|");
-        result.append(formatTime(source.getTime())).append(tab(formatTime(source.getTime()).length(), MAXTIMELENGTH));
+    private String formatRow(DashboardLine dashboardLine, int maxNameLength, int maxTeamLength, int maxTimeLength) {
+        String index;
+        if (currentIndex < 10) {
+            index = String.format("%d.%-" + (TAB_FORMATROW + 1) + "s", currentIndex, "");
+        } else {
+            index = String.format("%d.%-" + TAB_FORMATROW + "s", currentIndex, "");
+        }
+        String name = String.format("%-" + maxNameLength + "s|", dashboardLine.getName());
+        String team = String.format("%-" + maxTeamLength + "s|", dashboardLine.getTeam());
+        String time = String.format("%-" + maxTimeLength + "s", formatTime(dashboardLine.getTime()));
         currentIndex++;
-        return result.toString();
-    }
-
-    public String tab(int length, int max) {
-        return String.join("", Collections.nCopies(max - length, " "));
+        return String.format("%s%s%s%s", index, name, team, time);
     }
 
     private String addDashboardLine(int length) {
